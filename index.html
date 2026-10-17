@@ -1,0 +1,490 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Life in Weeks</title>
+<meta name="description" content="See your whole life as a grid of weeks. Every box is one week. How many have you lived, and what will you do with the rest?">
+<meta property="og:title" content="Life in Weeks">
+<meta property="og:description" content="Your whole life on one page — every box is one week.">
+<meta property="og:image" content="https://sahil-zaini.github.io/life-in-weeks/preview.png">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23111827'/%3E%3Cg fill='%23f0a83c'%3E%3Crect x='6' y='6' width='5' height='5' rx='1.2'/%3E%3Crect x='13.5' y='6' width='5' height='5' rx='1.2'/%3E%3Crect x='21' y='6' width='5' height='5' rx='1.2'/%3E%3Crect x='6' y='13.5' width='5' height='5' rx='1.2'/%3E%3C/g%3E%3Cg fill='none' stroke='%23f0a83c' stroke-opacity='.45'%3E%3Crect x='14' y='14' width='4' height='4' rx='1'/%3E%3Crect x='21.5' y='14' width='4' height='4' rx='1'/%3E%3Crect x='6.5' y='21.5' width='4' height='4' rx='1'/%3E%3Crect x='14' y='21.5' width='4' height='4' rx='1'/%3E%3Crect x='21.5' y='21.5' width='4' height='4' rx='1'/%3E%3C/g%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Syne:wght@600;800&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* Layout: a life drawn sunrise → sunset. Each decade has its own colour, from teal childhood to golden old age. */
+:root {
+  --bg: #f4f2ee;
+  --panel: #ffffff;
+  --ink: #16161d;
+  --mute: #6b6a75;
+  --line: #e2dfd8;
+  --empty: #dcd8cf;
+  --focus: #16161d;
+  --d0: #22a597; --d1: #3d8fe0; --d2: #6c5ee8; --d3: #b553c8;
+  --d4: #e0527d; --d5: #ec744e; --d6: #e69a2e; --d7: #c9a43a; --d8: #9a8a5a; --d9: #7d7a70;
+  --f-display: "Syne", "Arial Black", system-ui, sans-serif;
+  --f-body: "DM Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --f-mono: "JetBrains Mono", ui-monospace, Menlo, Consolas, monospace;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #0e0f14; --panel: #161821; --ink: #ecebf2; --mute: #9896a6; --line: #262835; --empty: #262836; --focus: #ffffff;
+  --d0: #2fc4b3; --d1: #56a6f5; --d2: #8a7dff; --d3: #d06ee3; --d4: #ff6c96; --d5: #ff8d63; --d6: #ffb648; --d7: #e6c45c; --d8: #b8a878; --d9: #9c998f;
+  color-scheme: dark; } }
+:root[data-theme="dark"] {
+  --bg: #0e0f14; --panel: #161821; --ink: #ecebf2; --mute: #9896a6; --line: #262835; --empty: #262836; --focus: #ffffff;
+  --d0: #2fc4b3; --d1: #56a6f5; --d2: #8a7dff; --d3: #d06ee3; --d4: #ff6c96; --d5: #ff8d63; --d6: #ffb648; --d7: #e6c45c; --d8: #b8a878; --d9: #9c998f;
+  color-scheme: dark; }
+
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body { background: var(--bg); color: var(--ink); font: 16px/1.55 var(--f-body); -webkit-font-smoothing: antialiased; }
+.wrap { max-width: 1080px; margin: 0 auto; padding-block: 28px 56px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+h1, h2 { font-family: var(--f-display); letter-spacing: -0.02em; margin: 0; text-wrap: balance; }
+p { margin: 0; }
+button, input, select { font: inherit; color: inherit; }
+:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; border-radius: 4px; }
+
+/* top bar */
+.top { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 36px; }
+.brand { display: flex; align-items: center; gap: 10px; font-family: var(--f-display); font-weight: 800; font-size: 18px; text-decoration: none; color: var(--ink); }
+.brand-dots { display: grid; grid-template-columns: repeat(3, 7px); gap: 3px; }
+.brand-dots i { width: 7px; height: 7px; border-radius: 2px; background: var(--d6); }
+.brand-dots i:nth-child(n+5) { background: transparent; box-shadow: inset 0 0 0 1.5px var(--empty); }
+.icon-btn { border: 1px solid var(--line); background: var(--panel); border-radius: 10px; padding: 8px 12px; cursor: pointer; font-size: 14px; }
+
+/* hero / form */
+.hero { display: grid; gap: 18px; margin-bottom: 30px; }
+.hero h1 { font-size: clamp(38px, 7vw, 76px); line-height: .95; font-weight: 800; }
+.hero h1 span { background: linear-gradient(90deg, var(--d0), var(--d2), var(--d4), var(--d6)); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.lede { color: var(--mute); max-width: 56ch; font-size: 18px; }
+form.ask { display: flex; flex-wrap: wrap; gap: 10px; align-items: end; background: var(--panel); border: 1px solid var(--line); border-radius: 16px; padding: 14px; }
+.field { display: grid; gap: 4px; flex: 1 1 160px; min-width: 0; }
+.field label { font: 600 11px/1 var(--f-mono); letter-spacing: .08em; text-transform: uppercase; color: var(--mute); }
+.field input, .field select { width: 100%; border: 1px solid var(--line); background: var(--bg); border-radius: 10px; padding: 10px 12px; min-height: 44px; }
+.go { flex: 0 0 auto; border: 0; border-radius: 10px; padding: 0 22px; min-height: 44px; background: var(--ink); color: var(--bg); font-weight: 700; cursor: pointer; }
+.go:hover { opacity: .9; }
+
+/* headline */
+.headline { display: grid; gap: 6px; margin-bottom: 22px; }
+.headline h2 { font-size: clamp(26px, 4.6vw, 44px); line-height: 1.05; }
+.headline h2 b { color: var(--accent, var(--d6)); }
+.bar { height: 8px; border-radius: 99px; background: var(--empty); overflow: hidden; max-width: 520px; margin-top: 6px; }
+.bar i { display: block; height: 100%; border-radius: 99px; background: linear-gradient(90deg, var(--d0), var(--d2), var(--d4), var(--d6)); width: 0; transition: width 1.2s ease; }
+.sub { color: var(--mute); font-size: 15px; }
+
+/* grid */
+.board { background: var(--panel); border: 1px solid var(--line); border-radius: 18px; padding: 18px 16px 14px; }
+.board-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 12px; }
+.legend { display: flex; flex-wrap: wrap; gap: 6px 14px; font: 12px/1.3 var(--f-mono); color: var(--mute); }
+.legend span { display: inline-flex; align-items: center; gap: 6px; }
+.legend i { width: 10px; height: 10px; border-radius: 3px; display: inline-block; }
+.hint { font-size: 13px; color: var(--mute); }
+.gridwrap { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 8px; max-width: 760px; margin: 0 auto; }
+.years { display: grid; grid-template-rows: repeat(var(--rows), 1fr); font: 10px/1 var(--f-mono); color: var(--mute); text-align: right; }
+.years span { display: flex; align-items: center; justify-content: flex-end; height: 100%; }
+.weeks { display: grid; grid-template-columns: repeat(52, minmax(0, 1fr)); gap: 2px; min-width: 0; }
+.w { min-width: 0; width: 100%; aspect-ratio: 1; border-radius: 2px; background: transparent; box-shadow: inset 0 0 0 1px var(--empty); cursor: pointer; padding: 0; border: 0; position: relative; }
+.w.l { box-shadow: none; }
+.w.now { background: var(--ink) !important; animation: pulse 1.6s ease-in-out infinite; z-index: 1; }
+.w.m::after { content: ""; position: absolute; inset: -2px; border-radius: 3px; box-shadow: 0 0 0 2px var(--ink); }
+@keyframes pulse { 50% { transform: scale(1.6); } }
+@media (prefers-reduced-motion: reduce) { .w.now { animation: none; } .bar i { transition: none; } }
+.tip { position: fixed; z-index: 20; pointer-events: none; background: var(--ink); color: var(--bg); font: 12px/1.35 var(--f-mono); padding: 7px 9px; border-radius: 8px; max-width: 240px; transform: translate(-50%, calc(-100% - 10px)); }
+.board-foot { display: flex; justify-content: space-between; margin: 8px auto 0; max-width: 760px; font: 11px/1 var(--f-mono); color: var(--mute); padding-left: 28px; }
+
+/* stats */
+section { margin-top: 30px; display: grid; gap: 14px; }
+section > h2 { font-size: 22px; }
+.facts { display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 10px; }
+.fact { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 14px; display: grid; gap: 2px; align-content: start; }
+.fact b { font: 700 24px/1.1 var(--f-display); font-variant-numeric: tabular-nums; }
+.fact span { font-size: 13px; color: var(--mute); }
+.fact.ahead b { color: var(--d6); }
+
+/* milestones */
+.ms-list { display: grid; gap: 8px; }
+.ms { display: flex; align-items: center; gap: 12px; background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 10px 12px; }
+.ms .e { font-size: 22px; width: 30px; text-align: center; }
+.ms .t { flex: 1; min-width: 0; }
+.ms .t div { font-weight: 600; overflow-wrap: anywhere; }
+.ms .t small { color: var(--mute); font: 12px var(--f-mono); }
+.ms button { border: 0; background: none; color: var(--mute); cursor: pointer; font-size: 18px; padding: 4px 8px; }
+.empty-ms { color: var(--mute); font-size: 14px; }
+form.add { display: flex; flex-wrap: wrap; gap: 8px; align-items: end; background: var(--panel); border: 1px dashed var(--line); border-radius: 12px; padding: 12px; }
+form.add .field { flex: 1 1 140px; }
+form.add .field.emoji { flex: 0 0 74px; }
+
+/* actions */
+.actions { display: flex; flex-wrap: wrap; gap: 10px; }
+.btn { border: 1px solid var(--line); background: var(--panel); border-radius: 12px; padding: 11px 16px; cursor: pointer; font-weight: 600; display: inline-flex; align-items: center; gap: 8px; text-decoration: none; color: var(--ink); }
+.btn.primary { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+.toast { position: fixed; left: 50%; bottom: calc(24px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); background: var(--ink); color: var(--bg); padding: 10px 16px; border-radius: 10px; font-size: 14px; z-index: 30; }
+.quote { font-family: var(--f-display); font-size: clamp(20px, 3vw, 28px); line-height: 1.25; max-width: 30ch; }
+.quote small { display: block; font: 13px var(--f-mono); color: var(--mute); margin-top: 8px; }
+footer { margin-top: 48px; padding-top: 18px; border-top: 1px solid var(--line); color: var(--mute); font-size: 13px; display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px; }
+footer a { color: inherit; }
+.demo-tag { font: 600 11px/1 var(--f-mono); letter-spacing: .08em; text-transform: uppercase; background: var(--d6); color: #1a1205; padding: 5px 8px; border-radius: 6px; justify-self: start; }
+@media (max-width: 560px) {
+  .weeks { gap: 1px; } .w { border-radius: 1.5px; }
+  .board { padding: 12px 10px 10px; }
+  .years { font-size: 8px; }
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <a class="brand" href="./"><span class="brand-dots"><i></i><i></i><i></i><i></i><i></i><i></i></span>Life in Weeks</a>
+    <button class="icon-btn" id="theme" type="button" aria-label="Switch light or dark theme">☾ / ☀</button>
+  </div>
+
+  <div class="hero">
+    <h1>Your whole life,<br><span>one box per week.</span></h1>
+    <p class="lede">An average life is about 4,000 weeks. Enter your birthday and see how many you have lived, how many are left, and what you want to fill them with.</p>
+    <form class="ask" id="ask">
+      <div class="field"><label for="f-name">Your name</label><input id="f-name" maxlength="40" placeholder="Sahil" autocomplete="given-name"></div>
+      <div class="field"><label for="f-birth">Birthday</label><input id="f-birth" type="date" required></div>
+      <div class="field"><label for="f-years">Expected lifespan</label>
+        <select id="f-years"><option value="80">80 years</option><option value="90" selected>90 years</option><option value="100">100 years</option></select></div>
+      <button class="go" type="submit">Show my life →</button>
+    </form>
+  </div>
+
+  <div class="headline">
+    <span class="demo-tag" id="demo-tag" hidden>Example · enter your birthday above</span>
+    <h2 id="title"></h2>
+    <div class="bar"><i id="bar"></i></div>
+    <p class="sub" id="subtitle"></p>
+  </div>
+
+  <div class="board">
+    <div class="board-head">
+      <div class="legend" id="legend"></div>
+      <div class="hint">Tap a week to add a milestone</div>
+    </div>
+    <div class="gridwrap">
+      <div class="years" id="years"></div>
+      <div class="weeks" id="weeks" role="grid" aria-label="Weeks of your life"></div>
+    </div>
+    <div class="board-foot"><span>week 1</span><span>week 52 →</span></div>
+  </div>
+
+  <section>
+    <h2>Your life in numbers</h2>
+    <div class="facts" id="facts"></div>
+  </section>
+
+  <section>
+    <h2>Milestones</h2>
+    <div class="ms-list" id="ms-list"></div>
+    <form class="add" id="add">
+      <div class="field emoji"><label for="m-emoji">Icon</label><input id="m-emoji" maxlength="4" value="⭐"></div>
+      <div class="field"><label for="m-text">What happened</label><input id="m-text" maxlength="60" placeholder="Started my company" required></div>
+      <div class="field"><label for="m-date">When</label><input id="m-date" type="date" required></div>
+      <button class="go" type="submit">Add</button>
+    </form>
+  </section>
+
+  <section>
+    <h2>Share it</h2>
+    <div class="actions">
+      <button class="btn primary" id="dl" type="button">⬇ Download image</button>
+      <button class="btn" id="share" type="button">🔗 Copy share link</button>
+      <a class="btn" id="wa" target="_blank" rel="noopener">WhatsApp</a>
+      <a class="btn" id="x" target="_blank" rel="noopener">Post on X</a>
+    </div>
+    <p class="quote" id="quote"></p>
+  </section>
+
+  <footer>
+    <span>Nothing leaves your browser. Your data lives only in the link you share.</span>
+    <span>Made by <a href="https://github.com/sahil-zaini" target="_blank" rel="noopener">Sahil Zaini</a> · <a href="https://github.com/sahil-zaini/life-in-weeks" target="_blank" rel="noopener">★ Star on GitHub</a></span>
+  </footer>
+</div>
+<div class="tip" id="tip" hidden></div>
+<div class="toast" id="toast" hidden></div>
+
+<script>
+(function () {
+  "use strict";
+  var DAY = 86400000;
+  var STAGES = ["Childhood", "Teens", "Twenties", "Thirties", "Forties", "Fifties", "Sixties", "Seventies", "Eighties", "Nineties"];
+  var QUOTES = [
+    ["The days are long, but the weeks are short.", "— almost everyone"],
+    ["It is not that we have a short time to live, but that we waste a lot of it.", "— Seneca"],
+    ["How we spend our days is, of course, how we spend our lives.", "— Annie Dillard"],
+    ["Every box you fill is one you chose. Choose well.", "— Life in Weeks"]
+  ];
+  var $ = function (id) { return document.getElementById(id); };
+  var state = { name: "", birth: null, years: 90, ms: [], demo: false };
+  var store = {
+    get: function () { try { return JSON.parse(localStorage.getItem("liw") || "null"); } catch (e) { return null; } },
+    set: function (v) { try { localStorage.setItem("liw", JSON.stringify(v)); } catch (e) {} }
+  };
+
+  // ---------- dates ----------
+  function parseDate(s) {
+    if (!s || !/^\d{4}-\d{2}-\d{2}$/.test(s)) return null;
+    var p = s.split("-").map(Number), d = new Date(p[0], p[1] - 1, p[2]);
+    return isNaN(d) ? null : d;
+  }
+  function iso(d) { return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0"); }
+  function birthdayIn(birth, year) {
+    var d = new Date(year, birth.getMonth(), birth.getDate());
+    if (d.getMonth() !== birth.getMonth()) d = new Date(year, birth.getMonth() + 1, 0); // 29 Feb → 28 Feb
+    return d;
+  }
+  function ageAt(birth, date) {
+    var a = date.getFullYear() - birth.getFullYear();
+    if (date < birthdayIn(birth, date.getFullYear())) a--;
+    return a;
+  }
+  // [row (age), col (week of that year, 0–51)]
+  function cell(birth, date) {
+    var age = ageAt(birth, date);
+    var start = birthdayIn(birth, birth.getFullYear() + age);
+    var col = Math.min(51, Math.floor(Math.round((date - start) / DAY) / 7));
+    return [age, Math.max(0, col)];
+  }
+  function weekStart(birth, row, col) {
+    var s = birthdayIn(birth, birth.getFullYear() + row);
+    return new Date(s.getFullYear(), s.getMonth(), s.getDate() + col * 7);
+  }
+  function fmt(d) { return d.toLocaleDateString(undefined, { day: "numeric", month: "short", year: "numeric" }); }
+  function n(x) { return Math.round(x).toLocaleString(); }
+  function big(x) {
+    if (x >= 1e9) return (x / 1e9).toFixed(1).replace(/\.0$/, "") + " billion";
+    if (x >= 1e6) return (x / 1e6).toFixed(1).replace(/\.0$/, "") + " million";
+    return n(x);
+  }
+
+  // ---------- url state ----------
+  function b64e(s) { return btoa(unescape(encodeURIComponent(s))).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, ""); }
+  function b64d(s) { s = s.replace(/-/g, "+").replace(/_/g, "/"); while (s.length % 4) s += "="; return decodeURIComponent(escape(atob(s))); }
+  function shareUrl() {
+    var q = new URLSearchParams();
+    q.set("b", iso(state.birth));
+    if (state.name) q.set("n", state.name);
+    if (state.years !== 90) q.set("y", state.years);
+    if (state.ms.length) q.set("m", b64e(JSON.stringify(state.ms.map(function (m) { return [m.d, m.t, m.e]; }))));
+    return location.origin + location.pathname + "?" + q.toString();
+  }
+  function loadFromUrl() {
+    var q = new URLSearchParams(location.search), b = parseDate(q.get("b"));
+    if (!b) return false;
+    state.birth = b; state.name = (q.get("n") || "").slice(0, 40);
+    state.years = [80, 90, 100].indexOf(+q.get("y")) >= 0 ? +q.get("y") : 90;
+    state.ms = [];
+    try { if (q.get("m")) state.ms = JSON.parse(b64d(q.get("m"))).map(function (a) { return { d: a[0], t: String(a[1]).slice(0, 60), e: String(a[2] || "⭐").slice(0, 4) }; }).filter(function (m) { return parseDate(m.d); }); } catch (e) {}
+    return true;
+  }
+  function save() {
+    if (state.demo) return;
+    store.set({ n: state.name, b: iso(state.birth), y: state.years, m: state.ms });
+    history.replaceState(null, "", shareUrl());
+  }
+
+  // ---------- render ----------
+  function render() {
+    var birth = state.birth, today = new Date(); today.setHours(0, 0, 0, 0);
+    var rows = state.years, cur = cell(birth, today);
+    var livedWeeks = cur[0] * 52 + cur[1], total = rows * 52, pct = Math.min(100, livedWeeks / total * 100);
+    var days = Math.round((today - birth) / DAY);
+    var end = birthdayIn(birth, birth.getFullYear() + rows);
+    var daysLeft = Math.max(0, Math.round((end - today) / DAY));
+    var who = state.name ? state.name + ", you have" : "You have";
+
+    $("demo-tag").hidden = !state.demo;
+    $("title").innerHTML = who + " lived <b>" + n(livedWeeks) + "</b> weeks.<br>About <b>" + n(Math.max(0, total - livedWeeks)) + "</b> are still ahead.";
+    $("subtitle").textContent = pct.toFixed(1) + "% of a " + rows + "-year life · age " + cur[0] + " · week " + (cur[1] + 1) + " of this year";
+    requestAnimationFrame(function () { $("bar").style.width = pct + "%"; });
+
+    // legend
+    var leg = "", stagesShown = Math.ceil(rows / 10);
+    for (var s = 0; s < stagesShown; s++) leg += '<span><i style="background:var(--d' + s + ')"></i>' + STAGES[s] + "</span>";
+    leg += '<span><i style="box-shadow:inset 0 0 0 1px var(--empty)"></i>Still ahead</span>';
+    $("legend").innerHTML = leg;
+
+    // years axis
+    var ys = $("years"), yHtml = "";
+    ys.style.setProperty("--rows", rows);
+    for (var r = 0; r < rows; r++) yHtml += "<span>" + (r % 5 === 0 ? r : "") + "</span>";
+    ys.innerHTML = yHtml;
+
+    // weeks
+    var msByCell = {};
+    state.ms.forEach(function (m, i) { var c = cell(birth, parseDate(m.d)); msByCell[c[0] * 52 + c[1]] = i; });
+    var frag = document.createDocumentFragment(), weeks = $("weeks");
+    weeks.innerHTML = "";
+    for (var i = 0; i < total; i++) {
+      var row = Math.floor(i / 52), b = document.createElement("button");
+      b.type = "button"; b.className = "w"; b.dataset.i = i;
+      if (i < livedWeeks) { b.classList.add("l"); b.style.background = "var(--d" + Math.min(9, Math.floor(row / 10)) + ")"; }
+      if (i === livedWeeks) b.classList.add("now");
+      if (msByCell[i] !== undefined) b.classList.add("m");
+      if (i % 52 === 0) b.setAttribute("aria-label", "Age " + row);
+      frag.appendChild(b);
+    }
+    weeks.appendChild(frag);
+
+    // facts
+    var f = [
+      [n(days), "days lived"],
+      [n(Math.floor(days / 7)), "weekends enjoyed"],
+      [n(days), "sunsets seen"],
+      [n(days / 29.53), "full moons"],
+      [n(days / 354.37), "Ramadans"],
+      [big(days * 100800), "heartbeats"],
+      [big(days * 20000), "breaths taken"],
+      [n(days / 365.25 * 4), "seasons"],
+      [n(daysLeft / 7), "weekends ahead", 1],
+      [n(Math.max(0, rows - cur[0] - 1)), "birthdays ahead", 1],
+      [n(daysLeft / 365.25), "summers ahead", 1],
+      [n(daysLeft / 29.53), "full moons ahead", 1]
+    ];
+    $("facts").innerHTML = f.map(function (x) { return '<div class="fact' + (x[2] ? " ahead" : "") + '"><b>' + x[0] + "</b><span>" + x[1] + "</span></div>"; }).join("");
+
+    // milestones
+    var sorted = state.ms.map(function (m, i) { return { m: m, i: i }; }).sort(function (a, b) { return a.m.d < b.m.d ? -1 : 1; });
+    $("ms-list").innerHTML = sorted.length ? sorted.map(function (o) {
+      var d = parseDate(o.m.d), c = cell(birth, d);
+      return '<div class="ms"><span class="e">' + esc(o.m.e) + '</span><div class="t"><div>' + esc(o.m.t) + "</div><small>" + fmt(d) + " · age " + c[0] + ", week " + (c[1] + 1) + "</small></div>" +
+        (state.demo ? "" : '<button type="button" data-del="' + o.i + '" aria-label="Remove milestone">×</button>') + "</div>";
+    }).join("") : '<p class="empty-ms">No milestones yet. Add the weeks that changed your life: born, first school day, first job, wedding, first company…</p>';
+    $("m-date").min = iso(birth);
+
+    var q = QUOTES[Math.floor(days / 7) % QUOTES.length];
+    $("quote").innerHTML = "“" + q[0] + "”<small>" + q[1] + "</small>";
+
+    var text = (state.name ? state.name + " has" : "I have") + " lived " + n(livedWeeks) + " weeks. About " + n(total - livedWeeks) + " to go. See your life in weeks:";
+    var url = state.demo ? (location.protocol.indexOf("http") === 0 ? location.origin + location.pathname : "https://sahil-zaini.github.io/life-in-weeks/") : shareUrl();
+    $("wa").href = "https://wa.me/?text=" + encodeURIComponent(text + " " + url);
+    $("x").href = "https://twitter.com/intent/tweet?text=" + encodeURIComponent(text) + "&url=" + encodeURIComponent(url);
+    document.title = state.demo ? "Life in Weeks" : (state.name ? state.name + "'s " : "My ") + "Life in Weeks";
+  }
+  function esc(s) { return String(s).replace(/[&<>"']/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]; }); }
+  function toast(t) { var el = $("toast"); el.textContent = t; el.hidden = false; clearTimeout(toast.t); toast.t = setTimeout(function () { el.hidden = true; }, 2200); }
+
+  // ---------- tooltip + click ----------
+  var tip = $("tip");
+  $("weeks").addEventListener("pointerover", function (e) {
+    var b = e.target.closest(".w"); if (!b) return;
+    var i = +b.dataset.i, row = Math.floor(i / 52), col = i % 52, d = weekStart(state.birth, row, col);
+    var label = "Age " + row + " · week " + (col + 1) + "<br>" + fmt(d);
+    state.ms.forEach(function (m) { var c = cell(state.birth, parseDate(m.d)); if (c[0] === row && c[1] === col) label += "<br>" + esc(m.e + " " + m.t); });
+    var r = b.getBoundingClientRect();
+    tip.innerHTML = label; tip.style.left = (r.left + r.width / 2) + "px"; tip.style.top = r.top + "px"; tip.hidden = false;
+  });
+  $("weeks").addEventListener("pointerout", function () { tip.hidden = true; });
+  $("weeks").addEventListener("click", function (e) {
+    var b = e.target.closest(".w"); if (!b) return;
+    var i = +b.dataset.i, d = weekStart(state.birth, Math.floor(i / 52), i % 52);
+    $("m-date").value = iso(d); $("m-text").focus();
+    $("add").scrollIntoView({ behavior: "smooth", block: "center" });
+  });
+
+  // ---------- forms ----------
+  $("ask").addEventListener("submit", function (e) {
+    e.preventDefault();
+    var b = parseDate($("f-birth").value);
+    if (!b || b > new Date()) { toast("Please pick a birthday in the past."); return; }
+    var keep = !state.demo && state.birth && iso(state.birth) === iso(b);
+    state = { name: $("f-name").value.trim(), birth: b, years: +$("f-years").value, ms: keep ? state.ms : [{ d: iso(b), t: "Born", e: "👶" }], demo: false };
+    save(); render();
+    $("title").scrollIntoView({ behavior: "smooth", block: "start" });
+  });
+  $("add").addEventListener("submit", function (e) {
+    e.preventDefault();
+    if (state.demo) { toast("Enter your own birthday first."); return; }
+    var d = parseDate($("m-date").value), t = $("m-text").value.trim();
+    if (!d || !t) return;
+    if (d < state.birth) { toast("That date is before you were born."); return; }
+    state.ms.push({ d: iso(d), t: t.slice(0, 60), e: ($("m-emoji").value.trim() || "⭐").slice(0, 4) });
+    $("m-text").value = ""; save(); render(); toast("Milestone added");
+  });
+  $("ms-list").addEventListener("click", function (e) {
+    var b = e.target.closest("[data-del]"); if (!b) return;
+    state.ms.splice(+b.dataset.del, 1); save(); render();
+  });
+
+  // ---------- share ----------
+  $("share").addEventListener("click", function () {
+    if (state.demo) { toast("Enter your own birthday first."); return; }
+    var url = shareUrl();
+    var ok = function () { toast("Link copied"); };
+    try { navigator.clipboard.writeText(url).then(ok, function () { prompt0(url); }); } catch (e) { prompt0(url); }
+  });
+  function prompt0(url) { history.replaceState(null, "", url); toast("Copy the link from the address bar"); }
+
+  $("dl").addEventListener("click", function () {
+    var cs = getComputedStyle(document.documentElement), v = function (k) { return cs.getPropertyValue(k).trim(); };
+    var rows = state.years, size = 14, gap = 3, left = 70, top = 180, gw = 52 * (size + gap) - gap;
+    var W = left + gw + 70, H = top + rows * (size + gap) + 120, dpr = 2;
+    var c = document.createElement("canvas"); c.width = W * dpr; c.height = H * dpr;
+    var x = c.getContext("2d"); x.scale(dpr, dpr);
+    x.fillStyle = v("--bg"); x.fillRect(0, 0, W, H);
+    var today = new Date(), cur = cell(state.birth, today), lived = cur[0] * 52 + cur[1];
+    x.fillStyle = v("--ink"); x.font = "800 44px Syne, Arial Black, sans-serif";
+    x.fillText((state.name ? state.name + "'s" : "My") + " life in weeks", left, 90);
+    x.font = "500 22px 'DM Sans', sans-serif"; x.fillStyle = v("--mute");
+    x.fillText(n(lived) + " weeks lived · " + n(rows * 52 - lived) + " ahead · " + (lived / (rows * 52) * 100).toFixed(1) + "% of " + rows + " years", left, 132);
+    var msCells = {};
+    state.ms.forEach(function (m) { var cc = cell(state.birth, parseDate(m.d)); msCells[cc[0] * 52 + cc[1]] = 1; });
+    x.font = "11px 'JetBrains Mono', monospace"; x.textAlign = "right";
+    for (var i = 0; i < rows * 52; i++) {
+      var r = Math.floor(i / 52), col = i % 52, px = left + col * (size + gap), py = top + r * (size + gap);
+      if (col === 0 && r % 5 === 0) { x.fillStyle = v("--mute"); x.fillText(String(r), left - 12, py + 11); }
+      rr(x, px, py, size, size, 3);
+      if (i < lived) { x.fillStyle = v("--d" + Math.min(9, Math.floor(r / 10))); x.fill(); }
+      else if (i === lived) { x.fillStyle = v("--ink"); x.fill(); }
+      else { x.strokeStyle = v("--empty"); x.lineWidth = 1.2; x.stroke(); }
+      if (msCells[i]) { rr(x, px - 2.5, py - 2.5, size + 5, size + 5, 4); x.strokeStyle = v("--ink"); x.lineWidth = 2; x.stroke(); }
+    }
+    x.textAlign = "left"; x.fillStyle = v("--mute"); x.font = "500 16px 'DM Sans', sans-serif";
+    var home = location.protocol.indexOf("http") === 0 ? location.host + location.pathname.replace(/index\.html$/, "") : "sahil-zaini.github.io/life-in-weeks";
+    x.fillText("Make yours → " + home, left, H - 50);
+    c.toBlob(function (blob) {
+      var a = document.createElement("a");
+      a.href = URL.createObjectURL(blob); a.download = (state.name || "my") .toLowerCase().replace(/[^a-z0-9]+/g, "-") + "-life-in-weeks.png";
+      document.body.appendChild(a); a.click(); a.remove();
+      setTimeout(function () { URL.revokeObjectURL(a.href); }, 4000);
+      toast("Image saved");
+    }, "image/png");
+  });
+  function rr(x, px, py, w, h, r) { x.beginPath(); x.moveTo(px + r, py); x.arcTo(px + w, py, px + w, py + h, r); x.arcTo(px + w, py + h, px, py + h, r); x.arcTo(px, py + h, px, py, r); x.arcTo(px, py, px + w, py, r); x.closePath(); }
+
+  // ---------- theme ----------
+  function applyTheme(t) { if (t) document.documentElement.setAttribute("data-theme", t); else document.documentElement.removeAttribute("data-theme"); }
+  try { applyTheme(localStorage.getItem("liw-theme")); } catch (e) {}
+  $("theme").addEventListener("click", function () {
+    var dark = document.documentElement.getAttribute("data-theme") === "dark" ||
+      (!document.documentElement.getAttribute("data-theme") && matchMedia("(prefers-color-scheme: dark)").matches);
+    var t = dark ? "light" : "dark"; applyTheme(t);
+    try { localStorage.setItem("liw-theme", t); } catch (e) {}
+  });
+
+  // ---------- boot ----------
+  $("f-birth").max = iso(new Date());
+  if (!loadFromUrl()) {
+    var s = store.get();
+    if (s && parseDate(s.b)) { state = { name: s.n || "", birth: parseDate(s.b), years: s.y || 90, ms: s.m || [], demo: false }; }
+    else {
+      var demoBirth = new Date(); demoBirth.setFullYear(demoBirth.getFullYear() - 29); demoBirth.setMonth(4, 14);
+      var y0 = demoBirth.getFullYear();
+      state = { name: "Alex", birth: demoBirth, years: 90, demo: true, ms: [
+        { d: iso(demoBirth), t: "Born", e: "👶" }, { d: (y0 + 5) + "-09-01", t: "First day of school", e: "🎒" },
+        { d: (y0 + 18) + "-06-20", t: "Finished school", e: "🎓" }, { d: (y0 + 22) + "-03-10", t: "First job", e: "💼" },
+        { d: (y0 + 26) + "-11-02", t: "Started a company", e: "🚀" } ] };
+    }
+  }
+  if (!state.demo) { $("f-name").value = state.name; $("f-birth").value = iso(state.birth); $("f-years").value = String(state.years); }
+  render();
+})();
+</script>
+</body>
+</html>
